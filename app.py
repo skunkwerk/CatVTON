@@ -2,7 +2,7 @@ import argparse
 import os
 from datetime import datetime
 
-import gradio as gr
+#import gradio as gr
 import numpy as np
 import torch
 from diffusers.image_processor import VaeImageProcessor
@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="resource/demo/output",
+        default="/tmp",
         help="The output directory where the model predictions will be written.",
     )
 
@@ -84,8 +84,8 @@ def parse_args():
     
     args = parser.parse_args()
     env_local_rank = int(os.environ.get("LOCAL_RANK", -1))
-    if env_local_rank != -1 and env_local_rank != args.local_rank:
-        args.local_rank = env_local_rank
+    if env_local_rank != -1 and env_local_rank != args.get('local_rank'):
+        args['local_rank'] = env_local_rank
 
     return args
 
@@ -100,15 +100,16 @@ def image_grid(imgs, rows, cols):
     return grid
 
 
-args = parse_args()
-repo_path = snapshot_download(repo_id=args.resume_path)
+#args = parse_args()
+args = {'base_model_path': "booksforcharlie/stable-diffusion-inpainting", "resume_path": "zhengchong/CatVTON", "mixed_precision": "fp16", "repaint": True, "height": 1024, "width": 768, "allow_tf32": True}
+repo_path = snapshot_download(repo_id=args['resume_path'])
 # Pipeline
 pipeline = CatVTONPipeline(
-    base_ckpt=args.base_model_path,
+    base_ckpt=args['base_model_path'],
     attn_ckpt=repo_path,
     attn_ckpt_version="mix",
-    weight_dtype=init_weight_dtype(args.mixed_precision),
-    use_tf32=args.allow_tf32,
+    weight_dtype=init_weight_dtype(args['mixed_precision']),
+    use_tf32=args['allow_tf32'],
     device='cuda'
 )
 # AutoMasker
@@ -137,7 +138,7 @@ def submit_function(
         mask[mask > 0] = 255
         mask = Image.fromarray(mask)
 
-    tmp_folder = args.output_dir
+    tmp_folder = args['output_dir']
     date_str = datetime.now().strftime("%Y%m%d%H%M%S")
     result_save_path = os.path.join(tmp_folder, date_str[:8], date_str[8:] + ".png")
     if not os.path.exists(os.path.join(tmp_folder, date_str[:8])):
@@ -149,12 +150,12 @@ def submit_function(
 
     person_image = Image.open(person_image).convert("RGB")
     cloth_image = Image.open(cloth_image).convert("RGB")
-    person_image = resize_and_crop(person_image, (args.width, args.height))
-    cloth_image = resize_and_padding(cloth_image, (args.width, args.height))
+    person_image = resize_and_crop(person_image, (args['width'], args['height']))
+    cloth_image = resize_and_padding(cloth_image, (args['width'], args['height']))
     
     # Process mask
     if mask is not None:
-        mask = resize_and_crop(mask, (args.width, args.height))
+        mask = resize_and_crop(mask, (args['width'], args['height']))
     else:
         mask = automasker(
             person_image,
@@ -233,7 +234,7 @@ HEADER = """
 · SafetyChecker is set to filter NSFW content, but it may block normal results too. Please adjust the <span>`seed`</span> for normal outcomes.<br> 
 """
 
-def app_gradio():
+"""def app_gradio():
     with gr.Blocks(title="CatVTON") as demo:
         gr.Markdown(HEADER)
         with gr.Row():
@@ -371,3 +372,4 @@ def app_gradio():
 
 if __name__ == "__main__":
     app_gradio()
+"""
