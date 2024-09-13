@@ -129,14 +129,15 @@ def submit_function(
     seed,
     show_type
 ):
-    person_image, mask = person_image["background"], person_image["layers"][0]
+    """person_image, mask = person_image["background"], person_image["layers"][0]
     mask = Image.open(mask).convert("L")
     if len(np.unique(np.array(mask))) == 1:
         mask = None
     else:
         mask = np.array(mask)
         mask[mask > 0] = 255
-        mask = Image.fromarray(mask)
+        mask = Image.fromarray(mask)"""
+    mask = None
 
     tmp_folder = args['output_dir']
     date_str = datetime.now().strftime("%Y%m%d%H%M%S")
