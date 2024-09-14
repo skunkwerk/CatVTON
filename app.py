@@ -11,7 +11,7 @@ from PIL import Image
 
 from model.cloth_masker import AutoMasker, vis_mask
 from model.pipeline import CatVTONPipeline
-from utils import init_weight_dtype, resize_and_crop, resize_and_padding
+from utils import init_weight_dtype, resize_and_crop, resize_and_padding, repaint_result
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Simple example of a training script.")
@@ -183,6 +183,8 @@ def submit_function(
     masked_person = vis_mask(person_image, mask)
     save_result_image = image_grid([person_image, masked_person, cloth_image, result_image], 1, 4)
     save_result_image.save(result_save_path)
+    if args.get('repaint_result'):
+        result_image = repaint_result(result_image, person_image, mask)
     if show_type == "result only":
         return result_image
     else:
