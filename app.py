@@ -127,7 +127,8 @@ def submit_function(
     num_inference_steps,
     guidance_scale,
     seed,
-    show_type
+    show_type,
+    repaint
 ):
     """person_image, mask = person_image["background"], person_image["layers"][0]
     mask = Image.open(mask).convert("L")
@@ -183,7 +184,7 @@ def submit_function(
     masked_person = vis_mask(person_image, mask)
     save_result_image = image_grid([person_image, masked_person, cloth_image, result_image], 1, 4)
     save_result_image.save(result_save_path)
-    if args.get('repaint_result'):
+    if repaint:
         result_image = repaint_result(result_image, person_image, mask)
     if show_type == "result only":
         return result_image
