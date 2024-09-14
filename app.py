@@ -185,6 +185,7 @@ def submit_function(
     save_result_image = image_grid([person_image, masked_person, cloth_image, result_image], 1, 4)
     save_result_image.save(result_save_path)
     if repaint:
+        print('repainting')
         result_image = repaint_result(result_image, person_image, mask)
     if show_type == "result only":
         return result_image
