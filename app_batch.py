@@ -112,7 +112,7 @@ pipeline = CatVTONPipeline(
     weight_dtype=init_weight_dtype(args['mixed_precision']),
     use_tf32=args['allow_tf32'],
     device='cuda',
-    compile=True,
+    compile=False,
     skip_safety_check=True
 )
 # AutoMasker
