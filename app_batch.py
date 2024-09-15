@@ -102,7 +102,7 @@ def image_grid(imgs, rows, cols):
 
 #args = parse_args()
 args = {'output_dir': '/tmp', 'base_model_path': "booksforcharlie/stable-diffusion-inpainting", "resume_path": "zhengchong/CatVTON", "mixed_precision": "bf16", "repaint": True, "height": 1024, "width": 768, "allow_tf32": True}
-repo_path = "/root/.cache/huggingface/hub/models--zhengchong--CatVTON/snapshots/711be4b264f23280126a018015425edf410d897d"
+repo_path = snapshot_download(repo_id=args['resume_path']) #"/root/.cache/huggingface/hub/models--zhengchong--CatVTON/snapshots/711be4b264f23280126a018015425edf410d897d"
 #snapshot_download(repo_id=args['resume_path'])
 # Pipeline
 pipeline = CatVTONPipeline(
